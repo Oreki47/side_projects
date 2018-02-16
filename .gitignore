@@ -1,3 +1,6 @@
 *.csv
 *.bat
 config.py
+
+# specific
+/Game_Recommandation/Game Project/

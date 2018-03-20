@@ -1,6 +1,14 @@
 *.csv
 *.bat
 config.py
+*.odt
+*.txt
+*.ini
 
 # specific
-/Game_Recommandation/Game Project/
+*.ipynb
+**/report/
+**/__pycache__/
+**/.vscode/
+Investments/
+NLP/

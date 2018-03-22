@@ -1,0 +1,46 @@
+{% extends "welcome.html" %}
+
+{% block body2 %}
+
+    <form action="/sentiments" method="post">
+    <h3>Any Hashtags you want to explore?</h3>{{hashtag_form.review_text}} {{hashtag_form.go}}<br />
+    <input type="hidden" name="form-name" value="form1">
+    </form>    
+    <br></br>
+    <h3>Some Hashtags based on the host's address:</h3>
+
+    {% for (name, results) in list_tweets %}
+
+        <div class="row">
+            <div class="col-md-6">
+                    {% for tweet, sentiment in results %}
+                    {{ sentiment }} -- {{ tweet }} <br></br>
+                    {% endfor %}
+
+            </div>
+            <div class="col-md-6">
+                    <h3>{{ name }}</h3>
+                <a class="btn btn-primary" href="#">More Analysis! <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+        <hr>
+
+    {% endfor %}
+
+{% endblock %}
+
+
+{% block body3 %}
+
+    <form action="/sentiments" method="post">
+        <input type="hidden" name="form-name" value="form2">
+    <h3>Or maybe try search trendings near you!
+         Input <a herf="http://woeid.rosselliot.co.nz/">WOEID</a> below</h3>
+    
+    {{geo_form.review_text}} {{geo_form.go}}<br />
+    </form>    
+    <br></br>
+
+{% endblock %}
+
+

@@ -1,0 +1,9 @@
+{% extends "welcome.html" %}
+
+{% block body2 %}
+
+<form action="/recommendation" method="post">
+Steam ID:  {{form.review_text}} <br><br /> {{form.go}}<br />
+</form>    
+
+{% endblock %}

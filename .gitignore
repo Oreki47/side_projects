@@ -4,6 +4,9 @@ config.py
 *.odt
 *.txt
 *.ini
+*.jpg
+*.png
+
 
 # specific
 *.ipynb

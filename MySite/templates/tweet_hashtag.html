@@ -1,0 +1,28 @@
+{% extends "welcome.html" %}
+
+{% block body2 %}
+
+
+    <h3>Analysis of Hashtag {{hashtag}}:</h3>
+
+    <p>For 100 samples, there are a total of {{pos_tot}} tweets with positive tone,
+         and {{ neg_tot }} tweets with negative tone.</p>
+    <h3>Here are some samples</h3>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+                {% for pos_tweet in pos_tweets %}
+                Positive: {{ pos_tweet }} <br></br>
+                {% endfor %}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+            <div class="col-md-6">
+                    {% for neg_tweet in neg_tweets %}
+                    Negative: {{ neg_tweet }} <br></br>
+                    {% endfor %}
+            </div>
+        </div>
+    <hr>
+{% endblock %}

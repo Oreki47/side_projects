@@ -11,6 +11,7 @@ __author__ = 'Oreki47'
 import os, sys
 from flask import Flask, render_template
 import json, sqlalchemy
+import tweepy
 
 sys.path.insert(0, os.path.abspath('/home/ethan/Dropbox/Github/side_projects/MySite'))
 from src.utilities import ConfigData, mysql_enginer_init, ReviewModel
@@ -30,6 +31,10 @@ def main():
 	engine = mysql_enginer_init(config.mysql_game_database, config)
 	clf = ReviewModel()
 
+	auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
+	auth.set_access_token(config.access_token, config.access_token_secret)
+	api = tweepy.API(auth) 
+
 	@app.route('/')
 	@app.route('/index')
 	def index():
@@ -40,7 +45,7 @@ def main():
 	run_projects(app, engine, config)
 	run_contact(app, engine, config)
 	run_game_engine(app, engine, config)
-	run_sentiment_engine(app, engine, config, clf)
+	run_sentiment_engine(app, engine, config, clf, api)
 	
 	app.run(debug=True, port=5001, threaded=True)
 	

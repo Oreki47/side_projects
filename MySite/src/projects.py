@@ -15,7 +15,7 @@ def run_projects(app, engine, config):
 	def projects():
 		welcome_message = 'see below of a list of available projects'
 		projects_list = [
-			('/home/ethan/Dropbox/Github/side_projects/MySite/imgs/1.jpg', '/recommendation', 'Game Recommendation'),
-			('/home/ethan/Dropbox/Github/side_projects/MySite/imgs/1.jpg', '/sentiments', 'Tweet Data Sentimental Analysis')
+			('/static/imgs/game.png', '/recommendation', 'Game Recommendation'),
+			('/static/imgs/sentiments.jpg', '/sentiments', 'Tweet Data Sentimental Analysis')
 		]
 		return render_template('projects.html', welcome_message=welcome_message, projects_list=projects_list)

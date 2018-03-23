@@ -16,17 +16,13 @@ from flask import Flask, render_template, redirect, url_for, request
 from src.utilities import clean_text, HashtagFeatureForm, GeoFeatureForm
 warnings.filterwarnings("ignore")
 
-def run_sentiment_engine(app, engine, config, clf):
+def run_sentiment_engine(app, engine, config, clf, api):
 
     @app.route('/sentiments', methods=('GET', 'POST'))
     def sentiments():
 
         hashtag_form = HashtagFeatureForm()
         geo_form = GeoFeatureForm()
-
-        auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
-        auth.set_access_token(config.access_token, config.access_token_secret)
-        api = tweepy.API(auth)        
 
         trends = []
         for trend in api.trends_place('2442047')[0].get('trends')[:3]:
@@ -45,7 +41,7 @@ def run_sentiment_engine(app, engine, config, clf):
             if form_name == 'form1':
                 if hashtag_form.is_submitted():
                     line = hashtag_form.review_text.data
-                    return redirect(url_for('sentiments_hashtags', hashtag=line))
+                    return redirect(url_for('sentiments_hashtags', hashtag=line, api=api))
                 return render_template('welcome.html', welcome_message='Buh')
             elif form_name == 'form2':
                 if geo_form.is_submitted():
@@ -63,9 +59,37 @@ def run_sentiment_engine(app, engine, config, clf):
     @app.route('/sentiments/hashtag', methods=('GET', 'POST'))
     def sentiments_hashtags():
         hashtag = request.args['hashtag']
-        return render_template('welcome.html', welcome_message=hashtag)
+        tweets = []
+        for item in tweepy.Cursor(api.search, q=hashtag).items(100):
+            tweets.append(item.text)
+
+        tweets = np.array(list(map(clean_text, tweets)))
+        sentiments = [clf.predict(tweet, highlight=False) for tweet in tweets]
+        pos_ids = np.array([i for i, sentiment in enumerate(sentiments) if sentiment == 'pos'])
+        pos_tot = len(pos_ids)
+        pos_tweets = tweets[pos_ids][:3]
+        neg_tot = 100 - pos_tot
+        neg_tweets = tweets[~pos_ids][:3]
+
+        return render_template('tweet_hashtag.html', welcome_message="results", hashtag=hashtag,
+            pos_tweets=pos_tweets, pos_tot=pos_tot,
+            neg_tweets=neg_tweets, neg_tot=neg_tot)
+
 
     @app.route('/sentiments/woeid', methods=('GET', 'POST'))
     def sentiments_woeid():
         woeid = request.args['woeid']
-        return render_template('welcome.html', welcome_message=woeid)
+
+        trends = []
+        for trend in api.trends_place(woeid)[0].get('trends')[:3]:
+            name = trend.get('name')
+            tweets = []
+            for item in tweepy.Cursor(api.search, q=name).items(3):
+                tweets.append(item.text)
+
+            tweets = np.array(list(map(clean_text, tweets)))
+            sentiments = [clf.predict(tweet, highlight=False) for tweet in tweets]
+
+            trends.append((name, list(zip(tweets, sentiments))))
+
+        return render_template('tweet_woeid.html', welcome_message="", list_tweets=trends)
